@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import _ from 'lodash'
 
 import Checkbox from './check'
 
@@ -13,9 +14,14 @@ const Container = styled.div`
 `
 
 const VoteList = props => {
-  const { list, handleVoteChange, handleAddOption } = props
+  const { restaurantlist, handleVoteChange, handleAddOption, currentUserVote } = props
   return <Container>
-    {list && list.map(data => <Checkbox text={data.text} initCheck={data.checked} handleChangeChecked={handleVoteChange} />)}
+    {
+      restaurantlist && restaurantlist.map(data => {
+        const checkedVal = _.indexOf(currentUserVote, data)
+        return <Checkbox text={data} initCheck={checkedVal !== -1} handleChangeChecked={handleVoteChange} />
+      })
+    }
     <Checkbox text="Add an option" isAddOption addOptionClick={handleAddOption} />
   </Container>
 }

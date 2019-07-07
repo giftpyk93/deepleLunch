@@ -1,13 +1,17 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
+import _ from 'lodash'
 
 import Header from './haeder'
 import Modal from './modal'
 import Login from './login'
+import AddOption from './addOption'
 import VoteList from './voteList'
 import Result from './voteResult'
 
 const USER_KEY = 'DEEPLE_USER'
+const RESTRUANT_LIST_KEY = 'RESTRUANT_LIST'
+const ALL_VOTE_KEY = 'ALL_VOTE'
 
 const Container = styled.div`
   display: flex;
@@ -20,11 +24,33 @@ const mocklist = [
   {checked: false, text: 'ข้าวมันไก่'}
 ]
 
+const getLocalStorage = () => {
+  const user = localStorage.getItem(USER_KEY)
+  let restaurants = localStorage.getItem(RESTRUANT_LIST_KEY)
+  restaurants = restaurants && JSON.parse(restaurants)
+
+  let votes = localStorage.getItem(ALL_VOTE_KEY)
+  votes = votes && JSON.parse(votes)
+
+  return {
+    user,
+    restaurants,
+    votes
+  }
+}
+
 const MainLayout = () => {
+  const initData = getLocalStorage()
+
   const [isOpenLoginModal, setOpenLoginModal] = useState(false)
   const [isOpenOptionModal, setOpenOptionModal] = useState(false)
   const [showResult, setShowResult] = useState(false)
-  const [currentUser, setcrrUser] = useState(localStorage.getItem(USER_KEY))
+  const [currentUser, setcrrUser] = useState(initData.user)
+  const [restaurantList, setRestaurantList] = useState(initData.restaurants)
+  const [allVote, setAllVote] = useState(initData.votes)
+  const getVoteFromCrrUser = allVote && _.find(allVote, vote => vote.user === currentUser)
+
+  const [currentUserVote, setCrrUserVote] = useState(getVoteFromCrrUser ? getVoteFromCrrUser.vote : [])
   return <div>
     <Header
       title="deeple lunch"
@@ -37,7 +63,7 @@ const MainLayout = () => {
     />
     <Container>
       {
-        showResult ? <Result /> : <VoteList list={mocklist} handleAddOption={() => setOpenOptionModal(true)} handleVoteChange={() => {}} />
+        showResult ? <Result /> : <VoteList restaurantlist={restaurantList} currentUserVote={currentUserVote} handleAddOption={() => setOpenOptionModal(true)} handleVoteChange={() => {}} />
       }      
       <div onClick={() => setShowResult(!showResult)}>triggre show result</div>
     </Container>
@@ -55,7 +81,15 @@ const MainLayout = () => {
       isOpen={isOpenOptionModal}
       handleCloseModal={() => setOpenOptionModal(false)}
     >
-      add option
+      <AddOption handleAddOption={option => {
+        const crrList = restaurantList || []
+        crrList.push(option)
+        const computeList = JSON.stringify(crrList)
+
+        localStorage.setItem(RESTRUANT_LIST_KEY, computeList)
+        setRestaurantList(crrList)
+        setOpenOptionModal(false)
+      }} />
     </Modal>
   </div>
 }
