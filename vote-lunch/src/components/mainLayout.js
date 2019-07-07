@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import _ from 'lodash'
 
@@ -43,42 +43,41 @@ const Btn = styled.div`
   `}
 `
 
-const getLocalStorage = () => {
-  const user = localStorage.getItem(USER_KEY)
-  let restaurants = localStorage.getItem(RESTRUANT_LIST_KEY)
-  restaurants = restaurants && JSON.parse(restaurants)
-
-  let votes = localStorage.getItem(ALL_VOTE_KEY)
-  votes = votes && JSON.parse(votes)
-
-  return {
-    user,
-    restaurants,
-    votes
-  }
-}
-
 const MainLayout = () => {
-  const initData = getLocalStorage()
+  const initData = () => {
+    const user = localStorage.getItem(USER_KEY)
+    let restaurants = localStorage.getItem(RESTRUANT_LIST_KEY)
+    restaurants = restaurants && JSON.parse(restaurants)
+    let votes = localStorage.getItem(ALL_VOTE_KEY)
+    votes = votes && JSON.parse(votes)
 
-  // const [isOpenLoginModal, setOpenLoginModal] = useState(false)
+    const getVoteFromCrrUser = votes && _.find(votes, vote => vote.user === user)
+    const currUsrVote = getVoteFromCrrUser ? getVoteFromCrrUser.votes : []
+  
+    setcrrUser(user)
+    setRestaurantList(restaurants)
+    setAllVote(votes)
+    setCrrUserVote(currUsrVote)
+    setAlreadyVote(!_.isEqual(currUsrVote, []))
+  }
+
+  useEffect(() => {
+    initData()
+  }, []);
+  
   const [isOpenOptionModal, setOpenOptionModal] = useState(false)
   const [showResult, setShowResult] = useState(false)
-  const [currentUser, setcrrUser] = useState(initData.user)
-  const [restaurantList, setRestaurantList] = useState(initData.restaurants)
-  const [allVote, setAllVote] = useState(initData.votes || [])
-  const getVoteFromCrrUser = allVote && _.find(allVote, vote => vote.user === currentUser)
-  const [currentUserVote, setCrrUserVote] = useState(getVoteFromCrrUser ? getVoteFromCrrUser.votes : [])
-
-  const [alreadyVote, setAlreadyVote] = useState(!_.isEqual(currentUserVote, []))
-
+  const [currentUser, setcrrUser] = useState(undefined)
+  const [restaurantList, setRestaurantList] = useState([])
+  const [allVote, setAllVote] = useState([])
+  const [currentUserVote, setCrrUserVote] = useState([])
+  const [alreadyVote, setAlreadyVote] = useState(false)
+  
   const handleSelectedChoice = selected => {
     const selectedChoice = _.xor(currentUserVote, [selected])
     setCrrUserVote(selectedChoice)
-    console.log('selec', selectedChoice)
   }
 
-console.log('454535', currentUserVote)
 
   return <div>
     <Header
@@ -89,7 +88,6 @@ console.log('454535', currentUserVote)
         setCrrUserVote([])
         setcrrUser(undefined)
       }}
-      // handleLogin={() => setOpenLoginModal(true)}
     />
     { currentUser
       ? <Container>
@@ -132,27 +130,9 @@ console.log('454535', currentUserVote)
       : <Login handleLogin={(name) => {
           localStorage.setItem(USER_KEY, name)
 
-          const getVoteFromCrrUser = allVote && _.find(allVote, vote => vote.user === currentUser)
-          setCrrUserVote(getVoteFromCrrUser ? getVoteFromCrrUser.votes : [])
-
-          setcrrUser(name)
+          initData()
         }} />
     }
-    
-    {/* <Modal
-      isOpen={isOpenLoginModal}
-      handleCloseModal={() => setOpenLoginModal(false)}
-    >
-      <Login handleLogin={(name) => {
-        localStorage.setItem(USER_KEY, name)
-
-        const getVoteFromCrrUser = allVote && _.find(allVote, vote => vote.user === currentUser)
-        setCrrUserVote(getVoteFromCrrUser ? getVoteFromCrrUser.votes : [])
-
-        setcrrUser(name)
-        setOpenLoginModal(false)
-      }} />
-    </Modal> */}
     <Modal
       isOpen={isOpenOptionModal}
       handleCloseModal={() => setOpenOptionModal(false)}

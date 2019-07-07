@@ -13,7 +13,7 @@ const Container = styled.div`
 `
 
 const Header = props => {
-  const { handleLogin, user, title, handleLogout } = props
+  const { user, title, handleLogout } = props
   return <Container>
   <span>{title}</span>
   <div>

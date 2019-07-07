@@ -1,6 +1,5 @@
 import React, {useState} from 'react'
 import styled from 'styled-components'
-import deepleImg from '../deeple.png'
 
 const Container = styled.div`
   display: flex;
