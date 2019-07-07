@@ -59,12 +59,14 @@ const MainLayout = () => {
     setAllVote(votes)
     setCrrUserVote(currUsrVote)
     setAlreadyVote(!_.isEqual(currUsrVote, []))
+    setLoading(false)
   }
 
   useEffect(() => {
     initData()
   }, []);
   
+  const [loading, setLoading] = useState(true)
   const [isOpenOptionModal, setOpenOptionModal] = useState(false)
   const [showResult, setShowResult] = useState(false)
   const [currentUser, setcrrUser] = useState(undefined)
@@ -89,7 +91,7 @@ const MainLayout = () => {
         setcrrUser(undefined)
       }}
     />
-    { currentUser
+    { !loading && (currentUser
       ? <Container>
         {
           showResult ? <Result /> : <VoteList restaurantlist={restaurantList} currentUserVote={currentUserVote} handleAddOption={() => setOpenOptionModal(true)} handleVoteChange={handleSelectedChoice} />
@@ -132,7 +134,7 @@ const MainLayout = () => {
 
           initData()
         }} />
-    }
+    )}
     <Modal
       isOpen={isOpenOptionModal}
       handleCloseModal={() => setOpenOptionModal(false)}
