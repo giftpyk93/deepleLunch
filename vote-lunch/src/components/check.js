@@ -28,7 +28,7 @@ const Check = props => {
   const { text, handleChangeChecked, initCheck, isAddOption, addOptionClick } = props
   const [checkedValue, setCheckedValue] = useState(initCheck)
   const onClickChecked = () => {
-    // handleChangeChecked(!checkedValue)
+    handleChangeChecked(text)
     setCheckedValue(!checkedValue)
   }
 
