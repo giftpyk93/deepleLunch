@@ -61,15 +61,15 @@ const getLocalStorage = () => {
 const MainLayout = () => {
   const initData = getLocalStorage()
 
-  const [isOpenLoginModal, setOpenLoginModal] = useState(false)
+  // const [isOpenLoginModal, setOpenLoginModal] = useState(false)
   const [isOpenOptionModal, setOpenOptionModal] = useState(false)
   const [showResult, setShowResult] = useState(false)
   const [currentUser, setcrrUser] = useState(initData.user)
   const [restaurantList, setRestaurantList] = useState(initData.restaurants)
   const [allVote, setAllVote] = useState(initData.votes || [])
   const getVoteFromCrrUser = allVote && _.find(allVote, vote => vote.user === currentUser)
+  const [currentUserVote, setCrrUserVote] = useState(getVoteFromCrrUser ? getVoteFromCrrUser.votes : [])
 
-  const [currentUserVote, setCrrUserVote] = useState(getVoteFromCrrUser ? getVoteFromCrrUser.vote : [])
   const [alreadyVote, setAlreadyVote] = useState(!_.isEqual(currentUserVote, []))
 
   const handleSelectedChoice = selected => {
@@ -78,64 +78,81 @@ const MainLayout = () => {
     console.log('selec', selectedChoice)
   }
 
+console.log('454535', currentUserVote)
+
   return <div>
     <Header
       title="deeple lunch"
       user={currentUser}
       handleLogout={() => {
-        localStorage.setItem(USER_KEY, undefined)
+        localStorage.removeItem(USER_KEY)
+        setCrrUserVote([])
         setcrrUser(undefined)
       }}
-      handleLogin={() => setOpenLoginModal(true)}
+      // handleLogin={() => setOpenLoginModal(true)}
     />
-    <Container>
-      {
-        showResult ? <Result /> : <VoteList restaurantlist={restaurantList} currentUserVote={currentUserVote} handleAddOption={() => setOpenOptionModal(true)} handleVoteChange={handleSelectedChoice} />
-      }
-      {
-        showResult
-        ? <BtnContainer>
-            <Btn onClick={() => setShowResult(!showResult)}>Back To Vote</Btn>
-          </BtnContainer>
-        : <BtnContainer>
-            <Btn disabled={_.isEqual(currentUserVote, [])} onClick={() => {
-                if (_.isEqual(currentUserVote, [])) return
-                if (!currentUser) setOpenLoginModal(true)
-                const computeUserVotes = {
-                  user: currentUser,
-                  votes: currentUserVote
-                }
-                
-                const newAllvotes = allVote
-                _.remove(newAllvotes, vote => vote.user === currentUser)
-                newAllvotes.push(computeUserVotes)
+    { currentUser
+      ? <Container>
+        {
+          showResult ? <Result /> : <VoteList restaurantlist={restaurantList} currentUserVote={currentUserVote} handleAddOption={() => setOpenOptionModal(true)} handleVoteChange={handleSelectedChoice} />
+        }
+        {
+          showResult
+          ? <BtnContainer>
+              <Btn onClick={() => setShowResult(!showResult)}>Back To Vote</Btn>
+            </BtnContainer>
+          : <BtnContainer>
+              <Btn disabled={_.isEqual(currentUserVote, [])} onClick={() => {
+                  if (_.isEqual(currentUserVote, [])) return
 
-                const votesData = JSON.stringify(newAllvotes)
+                  const computeUserVotes = {
+                    user: currentUser,
+                    votes: currentUserVote
+                  }
+                  
+                  const newAllvotes = allVote
+                  _.remove(newAllvotes, vote => vote.user === currentUser)
+                  newAllvotes.push(computeUserVotes)
 
-                localStorage.setItem(ALL_VOTE_KEY, votesData)
+                  const votesData = JSON.stringify(newAllvotes)
 
-                setAllVote(newAllvotes)
-                setAlreadyVote(true)
-              }}
-            >Vote</Btn>
-            <Btn disabled={!alreadyVote} onClick={() => {
-              if (!alreadyVote) return
-              setShowResult(!showResult)
-            }}>Show Result</Btn>
-          </BtnContainer>
-      }
-      
-    </Container>
-    <Modal
+                  localStorage.setItem(ALL_VOTE_KEY, votesData)
+
+                  setAllVote(newAllvotes)
+                  setAlreadyVote(true)
+                }}
+              >Vote</Btn>
+              <Btn disabled={!alreadyVote} onClick={() => {
+                if (!alreadyVote) return
+                setShowResult(!showResult)
+              }}>Show Result</Btn>
+            </BtnContainer>
+        }
+      </Container>
+      : <Login handleLogin={(name) => {
+          localStorage.setItem(USER_KEY, name)
+
+          const getVoteFromCrrUser = allVote && _.find(allVote, vote => vote.user === currentUser)
+          setCrrUserVote(getVoteFromCrrUser ? getVoteFromCrrUser.votes : [])
+
+          setcrrUser(name)
+        }} />
+    }
+    
+    {/* <Modal
       isOpen={isOpenLoginModal}
       handleCloseModal={() => setOpenLoginModal(false)}
     >
       <Login handleLogin={(name) => {
         localStorage.setItem(USER_KEY, name)
+
+        const getVoteFromCrrUser = allVote && _.find(allVote, vote => vote.user === currentUser)
+        setCrrUserVote(getVoteFromCrrUser ? getVoteFromCrrUser.votes : [])
+
         setcrrUser(name)
         setOpenLoginModal(false)
       }} />
-    </Modal>
+    </Modal> */}
     <Modal
       isOpen={isOpenOptionModal}
       handleCloseModal={() => setOpenOptionModal(false)}

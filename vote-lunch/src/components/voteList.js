@@ -18,6 +18,7 @@ const VoteList = props => {
   return <Container>
     {
       restaurantlist && restaurantlist.map(data => {
+        console.log('yyyyy', currentUserVote)
         const checkedVal = _.indexOf(currentUserVote, data)
         return <Checkbox text={data} initCheck={checkedVal !== -1} handleChangeChecked={handleVoteChange} />
       })

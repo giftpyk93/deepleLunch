@@ -17,7 +17,7 @@ const Header = props => {
   return <Container>
   <span>{title}</span>
   <div>
-    {user ? <div>{user}<div onClick={handleLogout}>Logout</div></div> : <div onClick={handleLogin}>Login</div>}
+    {user && <div>{user}<div onClick={handleLogout}>Logout</div></div>}
   </div>
   </Container>
 }
