@@ -1,9 +1,12 @@
 import React from 'react'
+import styled from 'styled-components'
 
-const Login = () => {
-  return <div>
+const Container = styled.div``
+
+const Login = props => {
+  return <Container>
     login
-  </div>
+  </Container>
 }
 
 export default Login

@@ -13,10 +13,11 @@ const Container = styled.div`
 `
 
 const Header = props => {
+  const { handleLogin } = props
   return <Container>
   <span>{props.title}</span>
   <div>
-    {props.user ? <div>{props.user}<div>Logout</div></div> : <div>Login</div>}
+    {props.user ? <div>{props.user}<div>Logout</div></div> : <div onClick={handleLogin}>Login</div>}
   </div>
   </Container>
 }
