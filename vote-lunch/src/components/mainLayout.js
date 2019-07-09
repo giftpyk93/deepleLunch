@@ -45,6 +45,12 @@ const Btn = styled.div`
   `}
 `
 
+const Text = styled.p`
+  font-size: 2rem;
+  padding: 1.5rem;
+  margin: 0;
+`
+
 const MainLayout = () => {
   const initData = () => {
     const user = localStorage.getItem(USER_KEY)
@@ -79,6 +85,7 @@ const MainLayout = () => {
   
   const [loading, setLoading] = useState(true)
   const [isOpenOptionModal, setOpenOptionModal] = useState(false)
+  const [isOpenAfterVoteModal, setOpenAfterVoteModal] = useState(false)
   const [showResult, setShowResult] = useState(false)
   const [currentUser, setcrrUser] = useState(undefined)
   const [restaurantList, setRestaurantList] = useState([])
@@ -94,7 +101,7 @@ const MainLayout = () => {
 
   return <div>
     <Header
-      title="deeple lunch"
+      title="#deeple Lunch"
       user={currentUser}
       handleLogout={() => {
         localStorage.removeItem(USER_KEY)
@@ -104,6 +111,7 @@ const MainLayout = () => {
     />
     { !loading && (currentUser
       ? <Container>
+        <Text>วันนี้กินอะไรดี ?</Text>
         {
           showResult ? <Result allVote={allVote} /> : <VoteList restaurantlist={restaurantList} currentUserVote={currentUserVote} handleAddOption={() => setOpenOptionModal(true)} handleVoteChange={handleSelectedChoice} />
         }
@@ -135,6 +143,7 @@ const MainLayout = () => {
  
                   setAllVote(newAllvotes)
                   setAlreadyVote(true)
+                  setOpenAfterVoteModal(true)
                 }}
               >Vote</Btn>
               <Btn disabled={!alreadyVote} onClick={() => {
@@ -164,6 +173,12 @@ const MainLayout = () => {
         setRestaurantList(crrList)
         setOpenOptionModal(false)
       }} />
+    </Modal>
+    <Modal
+      isOpen={isOpenAfterVoteModal}
+      handleCloseModal={() => setOpenAfterVoteModal(false)}
+    >
+      <Text>Vote เรียบร้อยจ้า !!</Text>
     </Modal>
   </div>
 }
