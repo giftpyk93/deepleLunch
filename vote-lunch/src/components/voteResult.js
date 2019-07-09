@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import _ from 'lodash'
 import { Pie } from '@nivo/pie'
 
 const Container = styled.div`
@@ -25,21 +26,34 @@ const mockData = [
   }
 ]
 
-const VoteResult = () => {
+const VoteResult = props => {
+  const { allVote } = props
+
   const commonProperties = {
     width: window.innerWidth - 30,
     height: window.innerWidth - 30,
     margin: { top: 80, right: 80, bottom: 80, left: 80 },
-    data: mockData,
     animate: true,
     innerRadius: 0.5,
     padAngle: 2,
     cornerRadius: 3,
   };
+
+  const votes = allVote && allVote.map(data => data.votes)
+  const pieData = {}
+  if (votes) {
+    _.flatten(votes).forEach(v => {
+      pieData[v] = pieData[v] ? pieData[v] + 1 : 1
+    })
+
+    const computePieData = Object.keys(pieData).map(key => ({ id: key, value: pieData[key] }))
+    commonProperties.data = computePieData
+  }
+  
   return <Container>
-    <Pie
+    {votes && <Pie
       {...commonProperties}
-    />
+    />}
   </Container>
 }
 

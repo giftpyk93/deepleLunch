@@ -12,6 +12,7 @@ import Result from './voteResult'
 const USER_KEY = 'DEEPLE_USER'
 const RESTRUANT_LIST_KEY = 'RESTRUANT_LIST'
 const ALL_VOTE_KEY = 'ALL_VOTE'
+const TIME_STAMP = 'LASTES_VOTE_STAMP'
 
 const Container = styled.div`
   display: flex;
@@ -94,12 +95,15 @@ const MainLayout = () => {
     { !loading && (currentUser
       ? <Container>
         {
-          showResult ? <Result /> : <VoteList restaurantlist={restaurantList} currentUserVote={currentUserVote} handleAddOption={() => setOpenOptionModal(true)} handleVoteChange={handleSelectedChoice} />
+          showResult ? <Result allVote={allVote} /> : <VoteList restaurantlist={restaurantList} currentUserVote={currentUserVote} handleAddOption={() => setOpenOptionModal(true)} handleVoteChange={handleSelectedChoice} />
         }
         {
           showResult
           ? <BtnContainer>
-              <Btn onClick={() => setShowResult(!showResult)}>Back To Vote</Btn>
+              <Btn onClick={() => {
+                initData()
+                setShowResult(!showResult)
+              }}>Back To Vote</Btn>
             </BtnContainer>
           : <BtnContainer>
               <Btn disabled={_.isEqual(currentUserVote, [])} onClick={() => {
@@ -117,7 +121,8 @@ const MainLayout = () => {
                   const votesData = JSON.stringify(newAllvotes)
 
                   localStorage.setItem(ALL_VOTE_KEY, votesData)
-
+                  localStorage.setItem(TIME_STAMP, new Date())
+ 
                   setAllVote(newAllvotes)
                   setAlreadyVote(true)
                 }}
@@ -130,8 +135,8 @@ const MainLayout = () => {
         }
       </Container>
       : <Login handleLogin={(name) => {
+          if (!name) return
           localStorage.setItem(USER_KEY, name)
-
           initData()
         }} />
     )}
