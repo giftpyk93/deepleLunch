@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
+import moment from 'moment'
 import _ from 'lodash'
 
 import Header from './haeder'
@@ -47,9 +48,18 @@ const Btn = styled.div`
 const MainLayout = () => {
   const initData = () => {
     const user = localStorage.getItem(USER_KEY)
-    let restaurants = localStorage.getItem(RESTRUANT_LIST_KEY)
+    const timeStamp = localStorage.getItem(TIME_STAMP )
+
+    const checkSameDate = moment().isSame(timeStamp, 'date')
+
+    if (!checkSameDate) {
+      localStorage.removeItem(RESTRUANT_LIST_KEY)
+      localStorage.removeItem(ALL_VOTE_KEY)
+    }
+
+    let restaurants = checkSameDate && localStorage.getItem(RESTRUANT_LIST_KEY)
     restaurants = restaurants && JSON.parse(restaurants)
-    let votes = localStorage.getItem(ALL_VOTE_KEY)
+    let votes = checkSameDate && localStorage.getItem(ALL_VOTE_KEY)
     votes = votes && JSON.parse(votes)
 
     const getVoteFromCrrUser = votes && _.find(votes, vote => vote.user === user)
@@ -121,7 +131,7 @@ const MainLayout = () => {
                   const votesData = JSON.stringify(newAllvotes)
 
                   localStorage.setItem(ALL_VOTE_KEY, votesData)
-                  localStorage.setItem(TIME_STAMP, new Date())
+                  localStorage.setItem(TIME_STAMP, moment())
  
                   setAllVote(newAllvotes)
                   setAlreadyVote(true)
@@ -136,6 +146,7 @@ const MainLayout = () => {
       </Container>
       : <Login handleLogin={(name) => {
           if (!name) return
+
           localStorage.setItem(USER_KEY, name)
           initData()
         }} />

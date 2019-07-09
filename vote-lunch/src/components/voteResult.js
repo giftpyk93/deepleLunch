@@ -11,21 +11,6 @@ const Container = styled.div`
   align-items: center;
 `
 
-const mockData = [
-  {
-    id: 'KFC',
-    value: 3
-  },
-  {
-    id: 'Mc',
-    value: 1
-  },
-  {
-    id: 'Pizza',
-    value: 10
-  }
-]
-
 const VoteResult = props => {
   const { allVote } = props
 
